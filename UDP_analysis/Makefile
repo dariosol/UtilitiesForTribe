@@ -25,11 +25,11 @@ LDFLAGS  += $(ROOT_LDFLAGS) $(SYSTEM_FLAGS)
 
 analysisfarm: $(FILE)
 	$(CXX) $(FLAGS) $(INCDIR) $(FILE) $(LDFLAGS) $(CXXFLAGS) $(LDFLAG_RPATH) -o $(OFILE)
-
+	rm -rf analysis_farm.dSYM/
 all: analysis_farm
+
 
 .PHONY: clean
 
 clean:
 	rm -f $(OFILE) *~ core $(INCDIR)/*~ 
-	rm -rf analysis_farm.dSYM/
