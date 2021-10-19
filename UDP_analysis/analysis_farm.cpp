@@ -186,12 +186,56 @@ long long L0address(unsigned int timestamp, unsigned int finetime, int bitfineti
 
 }
 
+static void show_usage(std::string name)
+{
+  std::cerr << "Usage: \n"
+	    << "Options:\n"
+	    << "\t-h\t\tShow this help message\n"
+	    << "\t-i\t\tinputfilename\n"
+    	    << "\t-o\t\toutputfilename\n"
+    	    << "\t-v\t\tverbose\n"
+	    << std::endl;
+}
+
 
 //Put -v to have the printout
 int main(int argc, char *argv[]) {
+ if (argc < 3) {
+    show_usage(argv[0]);
+    return 1;
+  }
 
   bool debug=0;
-  if (argc>1 && strcmp(argv[1], "-v") == 0)  debug=1;
+  std::string inputFileName;
+  std::string outputFileName;
+
+    for (int i = 1; i < argc; ++i) {
+    std::string arg = argv[i];
+    if ((arg == "-h") || (arg == "--help")) {
+      show_usage(argv[0]);
+      return 0;
+    }
+    else if ((arg == "-v")) {
+      if (i + 1 < argc) { // Make sure we aren't at the end of argv!
+	debug = 1; // Increment 'i' so we don't get the argument as the next argv[i].
+	cout<<"debug: "<<debug<<endl;
+      }
+    }
+
+    else if ((arg == "-i")) {
+      if (i + 1 < argc) { // Make sure we aren't at the end of argv!
+	inputFileName = argv[i+1]; // Increment 'i' so we don't get the argument as the next argv[i].
+	cout<<"input: "<<inputFileName<<endl;
+      }
+    }
+
+    else if ((arg == "-o")) {
+      if (i + 1 < argc) { // Make sure we aren't at the end of argv!
+	outputFileName = argv[i+1]; // Increment 'i' so we don't get the argument as the next argv[i].
+	cout<<"output: "<<outputFileName<<endl;
+      }
+    } 
+  }
   
   cout<<"Creating histos"<<endl;
   double* Dati = new double[12000000];
@@ -207,7 +251,7 @@ int main(int argc, char *argv[]) {
   bool finish=0;
 
   //****ROOT****//
-  TFile *data = new TFile("dumpL0TP_plus.root","recreate");
+  TFile *data = new TFile(outputFileName.c_str(),"recreate");
 
   TH1D *h_timestamp   = new TH1D("timestamp","timestamp",1200, 0, 6 );
   h_timestamp->GetXaxis()->SetTitle("Time [s]");
@@ -253,11 +297,7 @@ int main(int argc, char *argv[]) {
 
   //***********//
   //File I want to read:
-  //  ifstream  finbin ("CHOD_Primitives_30_09_2019.bin", ios::in | ios::binary);
-  ifstream  finbin ("L0TP_TRIBE_RUN8764_500_OFFSET_OK_ALSO_LKr.bin", ios::in | ios::binary);
-//  ifstream  finbin ("/home/na62torino/Data/l0tribeinitandanalysis/ethreader/L0TPv35_Run9386_burst100_Otto_CHOD6.bin", ios::in | ios::binary);
-  
-  //ifstream  finbin ("dump.bin", ios::in | ios::binary);
+  ifstream  finbin (inputFileName.c_str(), ios::in | ios::binary);
   
   int MEPNumber=0;
   int hexdump_shift=96;
